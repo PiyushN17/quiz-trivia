@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-Player Trivia Battle Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <form id="name">
+        <label for="name1">Player 1 Name: </label>
+        <input type="text" id="name1" placeholder="Enter Player 1 Name">
+        <label for="name2">Player 2 Name: </label>
+        <input type="text" id="name2" placeholder="Enter Player 2 Name">
+        <button id="submit">Submit</button>
+        <p id="err"></p>
+    </form>
+    <div id="container" hidden>
+        <h2>Please Select Category</h2>
+        <select id="category">
+            <option value="" selected disabled>Category List</option>
+            <option value="music">Music</option>
+            <option value="sport_and_leisure">Sport and Leisure</option>
+            <option value="film_and_tv">Film and TV</option>
+            <option value="arts_and_literature">Arts and Literature</option>
+            <option value="history">History</option>
+            <option value="society_and_culture">Society and Culture</option>
+            <option value="science">Science</option>
+            <option value="geography">Geography</option>
+            <option value="food_and_drink">Food and Drink</option>
+            <option value="general_knowledge">General Knowledge</option>
+        </select>
+        <button id="submitBtn">Submit</button>
+        <p id="err2"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
