@@ -30,8 +30,34 @@
             <option value="food_and_drink">Food and Drink</option>
             <option value="general_knowledge">General Knowledge</option>
         </select>
+        <!-- <p id="loader" hidden>Loading...</p> -->
         <button id="submitBtn">Submit</button>
         <p id="err2"></p>
+    </div>
+    <div id="points" hidden>
+        <div id="p1Points"></div>
+        <div id="p2Points"></div>
+    </div>
+    <div id="container2" hidden>
+        <center><p id="turn"></p></center>    
+        <p id="question">Question: </p>
+        <p id="diffLevel">Difficulty Level: </p>
+        <p id="opt">Options: </p>
+        <div id="allOpt">
+            <input type="radio" name="answer" id="opt1" value="0">
+            <label for="opt1" id="firstOpt"></label>
+
+            <input type="radio" name="answer" id="opt2" value="1">
+            <label for="opt2" id="secOpt" ></label>
+            <br>
+            <input type="radio" name="answer" id="opt3" value="2">
+            <label for="opt3" id="thirdOpt"></label>
+
+            <input type="radio" name="answer" id="opt4" value="3">
+            <label for="opt4" id="fourthOpt"></label>
+            <br><button id="ansSub">Submit</button>
+            <p id="subErr"></p>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>
