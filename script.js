@@ -11,13 +11,38 @@ let err2 = document.getElementById('err2');
 let container = document.getElementById('container');
 let subBtn = document.getElementById('submitBtn');
 let categoryList = document.getElementById('category');
+let loader = document.getElementById('loader');
+let question = document.getElementById('question');
+let diffLevel = document.getElementById('diffLevel');
+let turn = document.getElementById('turn');
+let allOpt = document.getElementById('allOpt');
+let firstOpt = document.getElementById('firstOpt');
+let secOpt = document.getElementById('secOpt');
+let thirdOpt = document.getElementById('thirdOpt');
+let fourthOpt = document.getElementById('fourthOpt');
+let ansSub = document.getElementById('ansSub');
+let subErr = document.getElementById('subErr');
+let points = document.getElementById('points');
+let p1Points = document.getElementById('p1Points');
+let p2Points = document.getElementById('p2Points');
 
+let i = 0;
+let j = 0;
+let turnCounter = 1;
+let counter1 = 0;
+let counter2 = 0;
+let score = 0;
+const respArray = [];
+let shuffledOpt = [];
+const nameArr = [];
 
 btn.addEventListener('click', function(event) {
   event.preventDefault();
   if(name1.value !== '' && name2.value !== '') {
-    console.log(name1.value);
-    console.log(name2.value);
+    nameArr.push(name1.value);
+    p1Points.innerText = name1.value + ': 0';
+    nameArr.push(name2.value);
+    p2Points.innerText = name2.value + ': 0';
     name1.value = '';
     err.innerText = '';
     name2.value = '';
@@ -31,21 +56,31 @@ btn.addEventListener('click', function(event) {
 
 async function getQues(category) {
   try {
-    const easyOutput = await fetch(`https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${easyLevel}&limit=2`);
-    const easyResp = await easyOutput.json();
-    console.log(easyResp);
+    const easyOutput = `https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${easyLevel}&limit=2`;
+    const medOut = `https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${medLevel}&limit=2`;
+    const hardOut = `https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${hardLevel}&limit=2`;
 
-    const medOut = await fetch(`https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${medLevel}&limit=2`);
-    const medResp = await medOut.json();
-    console.log(medResp);
-
-    const hardOut = await fetch(`https://the-trivia-api.com/v2/questions?categories=${category}&difficulties=${hardLevel}&limit=2`);
-    const hardResp = await hardOut.json();
-    console.log(hardResp);
+    const output = await Promise.all([fetch(easyOutput), fetch(medOut), fetch(hardOut)]);
+    for(let out of output) {
+      const final = await out.json();
+      respArray.push(final);
+    }
+    newQuestion();
   }
   catch(e) {
     err2.innerText = e.message;
   }
+}
+
+function newQuestion() {
+    shuffledOpt = [respArray[i][j].correctAnswer, ...respArray[i][j].incorrectAnswers].sort(() => Math.random() - 0.5);
+    turn.innerText = (turnCounter%2!==0 ? nameArr[0]:nameArr[1]) + "'s turn";
+    question.innerText = 'Question: ' + respArray[i][j].question.text;
+    diffLevel.innerText = 'Difficulty Level: ' + respArray[i][j].difficulty;
+    firstOpt.innerText = shuffledOpt[0];
+    secOpt.innerText = shuffledOpt[1];
+    thirdOpt.innerText = shuffledOpt[2];
+    fourthOpt.innerText = shuffledOpt[3];
 }
 
 subBtn.addEventListener('click', function() {
@@ -53,7 +88,49 @@ subBtn.addEventListener('click', function() {
     err2.innerText = 'Please select a category.';
   }
   else {
+    points.hidden = false;
     err2.innerText = '';
+    container.hidden = true;
+    container2.hidden = false;
     getQues(categoryList.value);
   }
+})
+ansSub.addEventListener('click', function() {
+  const selected = document.querySelector("input[name='answer']:checked");
+  if (!selected) {
+    subErr.innerText = "Please select an option!";
+    return;
+  }
+  if(shuffledOpt[selected.value] === respArray[i][j].correctAnswer) {
+    subErr.innerText = "";
+    if(respArray[i][j].difficulty === 'easy') {
+      score = 10;
+    }
+    else if(respArray[i][j].difficulty === 'medium') {
+      score = 15
+    }
+    else if(respArray[i][j].difficulty === 'hard') {
+      score = 20
+    }
+    if(turnCounter%2 !== 0) {
+      counter1 += score;
+      p1Points.innerText = nameArr[0] + ': ' + counter1;
+    }
+    else {
+      counter2 += score;
+      p2Points.innerText = nameArr[1] + ': ' + counter2;
+    }
+  }
+  if (j < respArray[i].length - 1) {
+      j++;
+  } else if (i < respArray.length - 1) {
+      i++;
+      j = 0;
+  } else {
+      alert("Quiz finished!");
+      return;
+  }
+    selected.checked = false;
+    turnCounter++;
+    newQuestion();
 })
