@@ -29,6 +29,13 @@ let leaderboard = document.getElementById('leaderboard');
 let play1 = document.getElementById('play1');
 let play2 = document.getElementById('play2');
 let winner = document.getElementById('winner');
+let container2 = document.getElementById('container2');
+let anotherCategory = document.getElementById('anotherCategory');
+let end = document.getElementById('end');
+let finalScore = document.getElementById('finalScore');
+let finalWinner = document.getElementById('finalWinner');
+let finalPlay1 = document.getElementById('finalPlay1');
+let finalPlay2 = document.getElementById('finalPlay2');
 
 let i = 0;
 let j = 0;
@@ -36,7 +43,7 @@ let turnCounter = 1;
 let counter1 = 0;
 let counter2 = 0;
 let score = 0;
-const respArray = [];
+let respArray = [];
 let shuffledOpt = [];
 const nameArr = [];
 
@@ -87,16 +94,23 @@ function newQuestion() {
     fourthOpt.innerText = shuffledOpt[3];
 }
 
+let selectedCategory = '';
 subBtn.addEventListener('click', function() {
   if(categoryList.value === '') {
     err2.innerText = 'Please select a category.';
   }
   else {
+    selectedCategory  = categoryList.value;
+    let disabledOptions = document.querySelector(`option[value="${selectedCategory}"]`);
+    disabledOptions.disabled = true;
+    disabledOptions.hidden = true;
+
     points.hidden = false;
     err2.innerText = '';
     container.hidden = true;
     container2.hidden = false;
     getQues(categoryList.value);
+    categoryList.value = '';
   }
 });
 ansSub.addEventListener('click', function() {
@@ -105,16 +119,18 @@ ansSub.addEventListener('click', function() {
     subErr.innerText = "Please select an option!";
     return;
   }
+  score = 0;
   if(shuffledOpt[selected.value] === respArray[i][j].correctAnswer) {
+    alert('Correct!');
     subErr.innerText = "";
     if(respArray[i][j].difficulty === 'easy') {
       score = 10;
     }
     else if(respArray[i][j].difficulty === 'medium') {
-      score = 15
+      score = 15;
     }
     else if(respArray[i][j].difficulty === 'hard') {
-      score = 20
+      score = 20;
     }
     if(turnCounter%2 !== 0) {
       counter1 += score;
@@ -124,6 +140,9 @@ ansSub.addEventListener('click', function() {
       counter2 += score;
       p2Points.innerText = nameArr[1] + ': ' + counter2;
     }
+  }
+  else {
+    alert('Wrong!');
   }
   if (j < respArray[i].length - 1) {
     j++;
@@ -136,24 +155,51 @@ ansSub.addEventListener('click', function() {
     container2.hidden = true;
     points.hidden = true;
     leaderboard.hidden = false;
-    if(counter1 > counter2) {
-      winner.innerText = nameArr[0] + ' Won!!!';
-      play1.innerText = '1. ' + p1Points.innerText;
-      play2.innerText = '2. ' + p2Points.innerText;
-    }
-    else if(counter1 === counter2) {
-      winner.innerText = "It's a tie!";
-      play1.innerText = '1. ' + p1Points.innerText;
-      play2.innerText = '2. ' + p2Points.innerText;
-    }
-    else {
-      winner.innerText = nameArr[1] + ' Won!!!';
-      play1.innerText = '1. ' + p2Points.innerText;
-      play2.innerText = '2. ' + p1Points.innerText;
-    }
+
+    winner.innerText = 'Category Complete';
+    play1.innerText = nameArr[0] + ': ' + counter1;
+    play2.innerText = nameArr[1] + ': ' + counter2;
+    i = 0;
+    j = 0;
+    respArray = [];
+  
     return;
   }
   selected.checked = false;
   turnCounter++;
   newQuestion();
+});
+
+anotherCategory.addEventListener('click', function() {
+  leaderboard.hidden = true;
+  container.hidden = false;
+});
+
+end.addEventListener('click', function() {
+  finalScore.hidden = false;
+  leaderboard.hidden = true;
+  if(counter1 > counter2) {
+    finalWinner.innerText = nameArr[0] + ' Won!!!';
+    finalPlay1.innerText = '1. ' + nameArr[0] + ': ' + counter1;
+    finalPlay2.innerText = '2. ' + nameArr[1] + ': ' + counter2;
+    i = 0;
+    j = 0;
+    respArray = [];
+  }
+  else if(counter1 === counter2) {
+    finalWinner.innerText = "It's a tie!";
+    finalPlay1.innerText = nameArr[0] + ': ' + counter1;
+    finalPlay2.innerText = nameArr[1] + ': ' + counter2;
+    i = 0;
+    j = 0;
+    respArray = [];
+  }
+  else {
+    finalWinner.innerText = nameArr[1] + ' Won!!!';
+    finalPlay1.innerText = '1. ' + nameArr[1] + ': ' + counter2;
+    finalPlay2.innerText = '2. ' + nameArr[0] + ': ' + counter1;
+    i = 0;
+    j = 0;
+    respArray = [];
+  }
 });
