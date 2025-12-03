@@ -4,3 +4,4 @@
 -- This will use a Trivia API to fetch data
 -- It is a Open Source API
 -- I have updated the code - HTML, CSS and JS file
+-- Update the category by removing the current selected category
