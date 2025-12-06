@@ -11,3 +11,4 @@
 -- removed all the alerts on correct and wrong answers
 -- added error handling in score updation
 -- added a few css properties
+-- Need to make it responsive
