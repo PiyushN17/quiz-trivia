@@ -10,3 +10,4 @@
 -- Check answer button
 -- removed all the alerts on correct and wrong answers
 -- added error handling in score updation
+-- added a few css properties
