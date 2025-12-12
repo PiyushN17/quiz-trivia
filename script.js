@@ -45,7 +45,7 @@ let counter2 = 0;
 let score = 0;
 let respArray = [];
 let shuffledOpt = [];
-const nameArr = [];
+let nameArr = [];
 
 btn.addEventListener('click', function(event) {
   event.preventDefault();
