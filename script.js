@@ -36,6 +36,12 @@ let finalScore = document.getElementById('finalScore');
 let finalWinner = document.getElementById('finalWinner');
 let finalPlay1 = document.getElementById('finalPlay1');
 let finalPlay2 = document.getElementById('finalPlay2');
+let round = document.getElementById('round');
+let opt1 = document.getElementById('opt1');
+let opt2 = document.getElementById('opt2');
+let opt3 = document.getElementById('opt3');
+let opt4 = document.getElementById('opt4');
+
 
 let i = 0;
 let j = 0;
@@ -46,19 +52,25 @@ let score = 0;
 let respArray = [];
 let shuffledOpt = [];
 let nameArr = [];
+let roundCounter = 0;
 
 btn.addEventListener('click', function(event) {
   event.preventDefault();
   if(name1.value !== '' && name2.value !== '') {
-    nameArr.push(name1.value);
-    p1Points.innerText = name1.value + ': 0';
-    nameArr.push(name2.value);
-    p2Points.innerText = name2.value + ': 0';
-    name1.value = '';
-    err.innerText = '';
-    name2.value = '';
-    form.hidden = true;
-    container.hidden = false;
+    if(name1.value !== name2.value) {
+      nameArr.push(name1.value);
+      p1Points.innerText = name1.value + ': 0';
+      nameArr.push(name2.value);
+      p2Points.innerText = name2.value + ': 0';
+      name1.value = '';
+      err.innerText = '';
+      name2.value = '';
+      form.hidden = true;
+      container.hidden = false;
+    }
+    else {
+      err.innerText = 'Error! Both Names cannot be same';
+    }
   }
   else {
     err.innerText = 'Error! Enter Required Fields';
@@ -76,6 +88,7 @@ async function getQues(category) {
       const final = await out.json();
       respArray.push(final);
     }
+    console.log(respArray);
     newQuestion();
   }
   catch(e) {
@@ -84,8 +97,12 @@ async function getQues(category) {
 }
 
 function newQuestion() {
+    loader.hidden = true;
+    container2.hidden = false;
+    points.hidden = false;
     shuffledOpt = [respArray[i][j].correctAnswer, ...respArray[i][j].incorrectAnswers].sort(() => Math.random() - 0.5);
     turn.innerText = (turnCounter%2!==0 ? nameArr[0]:nameArr[1]) + "'s turn";
+    round.innerText = `Round ${roundCounter + 1}`;
     question.innerText = 'Question: ' + respArray[i][j].question.text;
     diffLevel.innerText = 'Difficulty Level: ' + respArray[i][j].difficulty;
     firstOpt.innerText = shuffledOpt[0];
@@ -105,24 +122,80 @@ subBtn.addEventListener('click', function() {
     disabledOptions.disabled = true;
     disabledOptions.hidden = true;
 
-    points.hidden = false;
     err2.innerText = '';
     container.hidden = true;
-    container2.hidden = false;
+    loader.hidden = false;
     getQues(categoryList.value);
     categoryList.value = '';
   }
 });
-ansSub.addEventListener('click', function() {
-  const selected = document.querySelector("input[name='answer']:checked");
-  if (!selected) {
-    subErr.innerText = "Please select an option!";
-    return;
-  }
+// ansSub.addEventListener('click', function() {
+//   const selected = document.querySelector("input[name='answer']:checked");
+//   if (!selected) {
+//     subErr.innerText = "Please select an option!";
+//     return;
+//   }
+//   score = 0;
+//   if(shuffledOpt[selected.value] === respArray[i][j].correctAnswer) {
+//     alert('Correct!');
+//     subErr.innerText = "";
+//     if(respArray[i][j].difficulty === 'easy') {
+//       score = 10;
+//     }
+//     else if(respArray[i][j].difficulty === 'medium') {
+//       score = 15;
+//     }
+//     else if(respArray[i][j].difficulty === 'hard') {
+//       score = 20;
+//     }
+//     if(turnCounter%2 !== 0) {
+//       counter1 += score;
+//       p1Points.innerText = nameArr[0] + ': ' + counter1;
+//     }
+//     else {
+//       counter2 += score;
+//       p2Points.innerText = nameArr[1] + ': ' + counter2;
+//     }
+//   }
+//   else {
+//     alert('Wrong!');
+//   }
+//   if (j < respArray[i].length - 1) {
+//     j++;
+//   } 
+//   else if (i < respArray.length - 1) {
+//     i++;
+//     j = 0;
+//   } 
+//   else {
+//     container2.hidden = true;
+//     points.hidden = true;
+//     leaderboard.hidden = false;
+
+//     winner.innerText = 'Category Complete';
+//     play1.innerText = nameArr[0] + ': ' + counter1;
+//     play2.innerText = nameArr[1] + ': ' + counter2;
+//     i = 0;
+//     j = 0;
+//     respArray = [];
+//     return;
+//   }
+//   selected.checked = false;
+//   turnCounter++;
+//   newQuestion();
+// });
+
+
+opt1.addEventListener('click', function() {
   score = 0;
-  if(shuffledOpt[selected.value] === respArray[i][j].correctAnswer) {
-    alert('Correct!');
-    subErr.innerText = "";
+  if(shuffledOpt[opt1.value] === respArray[i][j].correctAnswer) {
+    firstOpt.style.color = 'green';
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+
     if(respArray[i][j].difficulty === 'easy') {
       score = 10;
     }
@@ -132,18 +205,180 @@ ansSub.addEventListener('click', function() {
     else if(respArray[i][j].difficulty === 'hard') {
       score = 20;
     }
-    if(turnCounter%2 !== 0) {
-      counter1 += score;
-      p1Points.innerText = nameArr[0] + ': ' + counter1;
+  }
+  else {
+    firstOpt.style.color = 'red';
+    if (shuffledOpt[opt2.value] === respArray[i][j].correctAnswer) {
+      secOpt.style.color = 'green';
     }
-    else {
-      counter2 += score;
-      p2Points.innerText = nameArr[1] + ': ' + counter2;
+    else if (shuffledOpt[opt3.value] === respArray[i][j].correctAnswer) {
+      thirdOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt4.value] === respArray[i][j].correctAnswer) {
+      fourthOpt.style.color = 'green';
+    }
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+  }
+
+  if(turnCounter%2 !== 0) {
+    counter1 += score;
+    p1Points.innerText = nameArr[0] + ': ' + counter1;
+  }
+  else {
+    counter2 += score;
+    p2Points.innerText = nameArr[1] + ': ' + counter2;
+  }
+});
+
+opt2.addEventListener('click', function() {
+  score = 0;
+  if(shuffledOpt[opt2.value] === respArray[i][j].correctAnswer) {
+    secOpt.style.color = 'green';
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+
+    if(respArray[i][j].difficulty === 'easy') {
+      score = 10;
+    }
+    else if(respArray[i][j].difficulty === 'medium') {
+      score = 15;
+    }
+    else if(respArray[i][j].difficulty === 'hard') {
+      score = 20;
     }
   }
   else {
-    alert('Wrong!');
+    secOpt.style.color = 'red';
+    if (shuffledOpt[opt1.value] === respArray[i][j].correctAnswer) {
+      firstOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt3.value] === respArray[i][j].correctAnswer) {
+      thirdOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt4.value] === respArray[i][j].correctAnswer) {
+      fourthOpt.style.color = 'green';
+    }
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
   }
+
+  if(turnCounter%2 !== 0) {
+    counter1 += score;
+    p1Points.innerText = nameArr[0] + ': ' + counter1;
+  }
+  else {
+    counter2 += score;
+    p2Points.innerText = nameArr[1] + ': ' + counter2;
+  }
+});
+
+opt3.addEventListener('click', function() {
+  score = 0;
+  if(shuffledOpt[opt3.value] === respArray[i][j].correctAnswer) {
+    thirdOpt.style.color = 'green';
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+
+    if(respArray[i][j].difficulty === 'easy') {
+      score = 10;
+    }
+    else if(respArray[i][j].difficulty === 'medium') {
+      score = 15;
+    }
+    else if(respArray[i][j].difficulty === 'hard') {
+      score = 20;
+    }
+  }
+  else {
+    thirdOpt.style.color = 'red';
+    if (shuffledOpt[opt1.value] === respArray[i][j].correctAnswer) {
+      firstOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt2.value] === respArray[i][j].correctAnswer) {
+      secOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt4.value] === respArray[i][j].correctAnswer) {
+      fourthOpt.style.color = 'green';
+    }
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+  }
+
+  if(turnCounter%2 !== 0) {
+    counter1 += score;
+    p1Points.innerText = nameArr[0] + ': ' + counter1;
+  }
+  else {
+    counter2 += score;
+    p2Points.innerText = nameArr[1] + ': ' + counter2;
+  }
+});
+
+opt4.addEventListener('click', function() {
+  score = 0;
+  if(shuffledOpt[opt4.value] === respArray[i][j].correctAnswer) {
+    fourthOpt.style.color = 'green';
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+
+    if(respArray[i][j].difficulty === 'easy') {
+      score = 10;
+    }
+    else if(respArray[i][j].difficulty === 'medium') {
+      score = 15;
+    }
+    else if(respArray[i][j].difficulty === 'hard') {
+      score = 20;
+    }
+  }
+  else {
+    fourthOpt.style.color = 'red';
+    if (shuffledOpt[opt1.value] === respArray[i][j].correctAnswer) {
+      firstOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt2.value] === respArray[i][j].correctAnswer) {
+      secOpt.style.color = 'green';
+    }
+    else if (shuffledOpt[opt3.value] === respArray[i][j].correctAnswer) {
+      thirdOpt.style.color = 'green';
+    }
+    opt1.disabled = true;
+    opt2.disabled = true;
+    opt3.disabled = true;
+    opt4.disabled = true;
+    ansSub.disabled = false;
+  }
+
+  if(turnCounter%2 !== 0) {
+    counter1 += score;
+    p1Points.innerText = nameArr[0] + ': ' + counter1;
+  }
+  else {
+    counter2 += score;
+    p2Points.innerText = nameArr[1] + ': ' + counter2;
+  }
+});
+
+ansSub.addEventListener('click', function() {
   if (j < respArray[i].length - 1) {
     j++;
   } 
@@ -164,14 +399,37 @@ ansSub.addEventListener('click', function() {
     respArray = [];
     return;
   }
+
+
+  let selected = document.querySelector("input[name='answer']:checked");
   selected.checked = false;
   turnCounter++;
+  firstOpt.style.color = 'black';
+  secOpt.style.color = 'black';
+  thirdOpt.style.color = 'black';
+  fourthOpt.style.color = 'black';
+  opt1.disabled = false;
+  opt2.disabled = false;
+  opt3.disabled = false;
+  opt4.disabled = false;
+  ansSub.disabled = true;
   newQuestion();
-});
+})
 
 anotherCategory.addEventListener('click', function() {
+  let selected = document.querySelector("input[name='answer']:checked");
+  roundCounter++;
   leaderboard.hidden = true;
   container.hidden = false;
+  firstOpt.style.color = 'black';
+  secOpt.style.color = 'black';
+  thirdOpt.style.color = 'black';
+  fourthOpt.style.color = 'black';
+  opt1.disabled = false;
+  opt2.disabled = false;
+  opt3.disabled = false;
+  opt4.disabled = false;
+  selected.checked = false;
 });
 
 end.addEventListener('click', function() {
